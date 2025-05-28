@@ -2456,6 +2456,17 @@ getgenv().GetDis = function(v, v2)
 	return (v - v2.Position).Magnitude
 end
 
+getgenv().Tobj = function(obj, tar, speed)
+	if not speed then
+		speed = 200
+	end
+	local info = TweenInfo.new(GetDis(obj.CFrame, tar) / speed, Enum.EasingStyle.Linear)
+	local tween = TS:Create(obj, info, {
+		CFrame = tar
+	})
+	tween:Play()
+end
+
 getgenv().CheckMob = {
 	function(v1)
 		for i, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
@@ -4795,11 +4806,14 @@ if World3 then
 		end;
 	end);
 end;
+if World3 then
+	FarmTab:Seperator("Tyrqnt Farm");
 	FarmTab:Toggle("Auto Fully Tyrant [Beta]", _G.Settings.Farm["Fully Tyrant"], false, function(value)
 		_G.Settings.Farm["Fully Tyrant"] = value;
 		StopTween(_G.Settings.Farm["Fully Tyrant"]);
 		(getgenv()).SaveSetting();
 	end);
+end
 spawn(function()
 		while wait(0.2) do
             if _G.Settings.Farm["Fully Tyrant"] and World3 then
@@ -4811,7 +4825,7 @@ spawn(function()
 						EquipWeapon(_G.Settings.Main["Selected Weapon"])
 						topos(gasad.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0))
 						getgenv().FastAttack[2] = true
-					until not gasad or not gasad:FindFirstChild("HumanoidRootPart") or not gasad:FindFirstChild("Humanoid") or gasad:FindFirstChild("Humanoid") and gasad.Humanoid.Health <= 0 or not getgenv().AutoNewBoss
+					until not gasad or not gasad:FindFirstChild("HumanoidRootPart") or not gasad:FindFirstChild("Humanoid") or gasad:FindFirstChild("Humanoid") and gasad.Humanoid.Health <= 0 or not _G.Settings.Farm["Fully Tyrant"]
 				elseif checkgay() then
 					repeat
 						wait()
@@ -4821,7 +4835,7 @@ spawn(function()
 							getgenv().POSITION = c2.CFrame.Position
 						end
 						getgenv().SpamSkill = true
-					until not c2 or not c2.Parent or not c2.Parent.Parent or not givayong() or not checkgay() or CheckMob[1]("Tyrant of the Skies") or CheckMob[2]("Tyrant of the Skies") or not getgenv().AutoNewBoss
+					until not c2 or not c2.Parent or not c2.Parent.Parent or not givayong() or not checkgay() or CheckMob[1]("Tyrant of the Skies") or CheckMob[2]("Tyrant of the Skies") or not _G.Settings.Farm["Fully Tyrant"]
 					getgenv().SpamSkill = false
 					getgenv().POSITION = nil
 				else
@@ -4832,10 +4846,7 @@ spawn(function()
 							task.wait()
 							EquipWeapon(_G.Settings.Main["Selected Weapon"])
 							topos(v.HumanoidRootPart.CFrame * Pos)
-							getgenv().FastAttack[2] = true
-							getgenv().BringMob[2] = true
-						until not v or not v:FindFirstChild("HumanoidRootPart") or not v:FindFirstChild("Humanoid") or v:FindFirstChild("Humanoid") and v.Humanoid.Health <= 0 or checkgay() or not getgenv().AutoNewBoss
-						getgenv().BringMob[2] = false
+						until not v or not v:FindFirstChild("HumanoidRootPart") or not v:FindFirstChild("Humanoid") or v:FindFirstChild("Humanoid") and v.Humanoid.Health <= 0 or checkgay() or not _G.Settings.Farm["Fully Tyrant"]
 					else
 						local cc = {
 							CFrame.new(-16523.1094, 55.7330475, 1097.32617, -0.995399475, 1.42723178e-09, 0.0958118811, 1.91442862e-09, 1, 4.9930069e-09, -0.0958118811, 5.15346166e-09, -0.995399475),
