@@ -2538,6 +2538,29 @@ getgenv().Attack = function(aa)
     end
 end
 
+function sizepart(v)
+    v.HumanoidRootPart.CanCollide = false
+    if syn or Fluxus then
+        v.Humanoid:ChangeState(11)
+    else
+        for i,x in next,v:GetDescendants() do 
+            if (x:IsA("Part") or x:IsA("MeshPart")) and not string.find(v.Name,"Leg") and  x.CanCollide then 
+                x.CanCollide = false 
+            end
+        end
+    end
+    if not v.HumanoidRootPart:FindFirstChild("vando") then
+        local lock = Instance.new("BodyVelocity")
+        lock.Parent = v
+        lock.Name = "vando"
+        lock.MaxForce = Vector3.new(100000, 100000, 100000)
+        lock.Velocity = Vector3.new(0, 0, 0)
+    end
+end
+game:GetService("RunService").RenderStepped:connect(function()
+    sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
+end)
+
 function givayong()
 	local cc = nil
 	for i, v in pairs(workspace.Map.TikiOutpost.IslandModel:GetChildren()) do
@@ -2559,14 +2582,18 @@ function givayong()
 end
 
 function checkgay()
-	for i, v in pairs(workspace.Map.TikiOutpost.IslandModel:GetChildren()) do
-		if v.Name:find("Eye") then
-			if v.Transparency == 1 then
-				return false
-			end
-		end
-	end
-	return true
+    local eyes = {
+        workspace.Map.TikiOutpost.IslandModel.Eye1,
+        workspace.Map.TikiOutpost.IslandModel.Eye2,
+        workspace.Map.TikiOutpost.IslandModel.IslandChunks.E.Eye3,
+        workspace.Map.TikiOutpost.IslandModel.IslandChunks.E.Eye4
+    }
+    for _, eye in ipairs(eyes) do
+        if eye.Transparency ~= 0 then
+            return false
+        end
+    end
+    return true
 end
 
 v90 = getrawmetatable(game)
@@ -2620,6 +2647,29 @@ spawn(function()
             down("X", 0.5)
         end
     end
+end)
+
+function sizepart(v)
+    v.HumanoidRootPart.CanCollide = false
+    if syn or Fluxus then
+        v.Humanoid:ChangeState(11)
+    else
+        for i,x in next,v:GetDescendants() do 
+            if (x:IsA("Part") or x:IsA("MeshPart")) and not string.find(v.Name,"Leg") and  x.CanCollide then 
+                x.CanCollide = false 
+            end
+        end
+    end
+    if not v.HumanoidRootPart:FindFirstChild("vando") then
+        local lock = Instance.new("BodyVelocity")
+        lock.Parent = v
+        lock.Name = "vando"
+        lock.MaxForce = Vector3.new(100000, 100000, 100000)
+        lock.Velocity = Vector3.new(0, 0, 0)
+    end
+end
+game:GetService("RunService").RenderStepped:connect(function()
+    sethiddenproperty(game.Players.LocalPlayer, "SimulationRadius", math.huge)
 end)
 --Heheh
 MainTab:Seperator("Main");
@@ -3723,109 +3773,110 @@ MainTab:Toggle("Auto Summon Tyrant", _G.Settings.Main["Auto Summon Tyrant Of The
 	StopTween(_G.Settings.Main["Auto Summon Tyrant Of The Skies"]);
 	(getgenv()).SaveSetting();
 end);
-function AutoTyrantOfSkies()
-    spawn(function()
-        while task.wait(0.1) do
-            if _G.Settings.Main["Auto Summon Tyrant Of The Skies"] then
-                enemies = workspace.Enemies:GetChildren()
-                boss = workspace.Enemies:FindFirstChild("Tyrant of the Skies")
-                if boss then
-                    for _, v in pairs(enemies) do
-                        if v.Name == "Tyrant of the Skies" and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
-                            repeat
-                                task.wait()
-                                AutoHaki()
-                                EquipWeapon(_G.Settings.Config["Select Weapon"])
-                                FastAttack = true
-                                v.HumanoidRootPart.CanCollide = false
-                                v.Humanoid.WalkSpeed = 0
-                                toTarget(v.HumanoidRootPart.CFrame * CFrame.new(0, 25, 0))
-                                if not _G.Settings.Config["Fast Attack"] then
-                                    game:GetService("VirtualUser"):CaptureController()
-                                    game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
-                                end
-                            until not _G.Settings.Main["Auto Summon Tyrant Of The Skies"] or not v.Parent or v.Humanoid.Health <= 0
-                        else
-                            topos(CFrame.new(-16189, 155, 1385))
-                        end
+function AutoTyrant()
+    local plr = game.Players.LocalPlayer
+    local mobTyrant = {"Island Boy (Lv. 2475)", "Isle Champion (Lv. 2525)", "Serpent Hunter (Lv. 2550)", "Skull Slayer (Lv. 2575)"}
+    local cc = {
+        CFrame.new(-16523.1094, 55.7330475, 1097.32617, -0.995399475, 0, 0.0958118811, 0, 1, 0, -0.0958118811, 0, -0.995399475),
+        CFrame.new(-16508.6289, 55.7330589, -231.490143, 0.124618106, 0, -0.992204785, 0, 1, 0, 0.992204785, 0, 0.124618106)
+    }
+
+    if (plr.Character.HumanoidRootPart.Position - CFrame.new(-16220.0195, 9.1023283, 471.024963).Position).Magnitude < 1000 then
+        local boss = nil
+        for _, v in pairs(game.ReplicatedStorage:GetChildren()) do
+            if v:IsA("Model") and v.Name == "Tyrant of the Skies [Lv. 2600] [Raid Boss]" and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                boss = v
+                break
+            end
+        end
+        if not boss then
+            for _, v in pairs(workspace.Enemies:GetChildren()) do
+                if v:IsA("Model") and v.Name == "Tyrant of the Skies [Lv. 2600] [Raid Boss]" and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+                    boss = v
+                    break
+                end
+            end
+        end
+        if boss and _G.Settings.Main["Auto Summon Tyrant Of The Skies"] then
+            repeat
+                task.wait()
+                sizepart(boss)
+                topos(plr.Character.HumanoidRootPart.Position, boss.HumanoidRootPart.Position, boss.HumanoidRootPart.CFrame * CFrame.new(7, -20, 0))
+                if (plr.Character.HumanoidRootPart.Position - boss.HumanoidRootPart.Position).Magnitude < 50 then
+                    DetectFastAttack()
+                end
+                EquipWeapon(_G.Settings.Main["Selected Weapon"])
+            until not boss or not boss:FindFirstChild("HumanoidRootPart") or not boss:FindFirstChild("Humanoid") or boss.Humanoid.Health <= 0 or not _G.Settings.Main["Auto Summon Tyrant Of The Skies"]
+        elseif checkgay() and _G.Settings.Main["Auto Summon Tyrant Of The Skies"] then
+            local c2 = givayong()
+            if c2 then
+                repeat
+                    task.wait()
+                    sizepart(c2)
+                    topos(plr.Character.HumanoidRootPart.Position, c2.HumanoidRootPart.Position, c2.HumanoidRootPart.CFrame * CFrame.new(7, 20, 0))
+                    getgenv().POSITION = topos.CFrame.Position
+                    if (plr.Character.HumanoidRootPart.Position - c2.HumanoidRootPart.Position).Magnitude < 50 then
+                        getgenv().SpamSkill = true
                     end
-                elseif game.ReplicatedStorage:FindFirstChild("Tyrant of the Skies") then
-                    topos(game.ReplicatedStorage["Tyrant of the Skies"].HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
+                until not c2 or not c2.Parent or not c2.Parent.Parent or not givayong() or not checkgay() or boss or not _G.Settings.Main["Auto Summon Tyrant Of The Skies"]
+                getgenv().SpamSkill = false
+                getgenv().POSITION = nil
+            end
+        else
+            local mob = nil
+            local dist = math.huge
+            for _, v in pairs(workspace.Enemies:GetChildren()) do
+                local name = v.Name:gsub(" %pLv. %d+%p", "")
+                if table.find(mobTyrant, v.Name) or table.find(mobTyrant, name) and v:IsA("Model") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 and v:FindFirstChild("HumanoidRootPart") then
+                    local magnitude = (v.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                    if magnitude < dist then
+                        dist = magnitude
+                        mob = v
+                    end
+                end
+            end
+            if mob and _G.Settings.Main["Auto Summon Tyrant Of The Skies"] then
+                repeat
+                    task.wait()
+                    sizepart(mob)
+                    topos(plr.Character.HumanoidRootPart.Position, mob.HumanoidRootPart.Position, mob.HumanoidRootPart.CFrame * CFrame.new(7, 20, 0))
+                    if (plr.Character.HumanoidRootPart.Position - mob.HumanoidRootPart.Position).Magnitude < 50 then
+                        DetectFastAttack()
+                    end
+                    EquipWeapon(_G.Settings.Main["Selected Weapon"])
+                    task.spawn(function() BringMob(mob) end)
+                until not mob or not mob:FindFirstChild("HumanoidRootPart") or not mob:FindFirstChild("Humanoid") or mob.Humanoid.Health <= 0 or checkgay() or not _G.Settings.Main["Auto Summon Tyrant Of The Skies"]
+            else
+                local spawn = workspace.Enemies:FindFirstChild("Spawn")
+                if spawn and _G.Settings.Main["Auto Summon Tyrant Of The Skies"] then
+                    plr.Character.HumanoidRootPart.CFrame = spawn.CFrame
                 else
-                    model = workspace.Map.TikiOutpost.IslandModel
-                    if model:FindFirstChild("Eye1") then
-                        eyeNames = {"Eye1", "Eye2", "Eye3", "Eye4"}
-                        allVisible = true
-                        for _, name in pairs(eyeNames) do
-                            eye = model:FindFirstChild(name)
-                            if not eye or eye.Transparency ~= 0 then
-                                allVisible = false
-                                break
-                            end
+                    for _, v in pairs(workspace.Enemies:GetChildren()) do
+                        if v:IsA("Model") and table.find(mobTyrant, v.Name) then
+                            plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
+                            break
                         end
-                        spawn(function()
-                            while task.wait(5) do
-                                for _, name in pairs(eyeNames) do
-                                    eye = model:FindFirstChild(name)
-                                    if eye then
-                                        eye.Color = Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
-                                    end
-                                end
-                            end
-                        end)
-                        if not allVisible then
-                            for _, v in pairs(enemies) do
-                                if v.Name == "Isle Outlaw" or v.Name == "Isle Champion" or v.Name == "Sun-kissed Warrior" or v.Name == "Serpent Hunter" or v.Name == "Skull Slayer" then
-                                    if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
-                                        repeat
-                                            game:GetService("RunService").Heartbeat:Wait()
-                                            StartMagnet = true
-                                            FastAttack = true
-                                            PosMon = v.HumanoidRootPart.CFrame
-                                            if not _G.Settings.Config["Fast Attack"] then
-                                                game:GetService("VirtualUser"):CaptureController()
-                                                game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672), workspace.CurrentCamera.CFrame)
-                                            end
-                                            char = game.Players.LocalPlayer.Character
-                                            if (char:FindFirstChild("Black Leg") and char["Black Leg"].Level.Value >= 150) or (char:FindFirstChild("Death Step") and char["Death Step"].Level.Value >= 400) then
-                                                game:GetService("VirtualInputManager"):SendKeyEvent(true, "V", false, game)
-                                                game:GetService("VirtualInputManager"):SendKeyEvent(false, "V", false, game)
-                                            end
-                                        until not _G.Settings.Main["Auto Summon Tyrant Of The Skies"] or not v.Parent or v.Humanoid.Health <= 0 or allVisible or not v:FindFirstChild("HumanoidRootPart") or not v:FindFirstChild("Humanoid")
-                                    end
-                                end
-                            end
-                            cc = {
-                                CFrame.new(-16523.1094, 55.7330475, 1097.32617, -0.995399475, 0, 0.0958118811, 0, 1, 0, -0.0958118811, 0, -0.995399475),
-                                CFrame.new(-16508.6289, 55.7330589, -231.490143, 0.124618106, 0, -0.992204785, 0, 1, 0, 0.992204785, 0, 0.124618106)
-                            }
-                            haha = cc[math.random(1,2)]
-                            repeat topos(haha) until (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - haha.Position).Magnitude <= 10
-                        else
-                            for _, model in pairs(workspace.Map.TikiOutpost.IslandModel:GetChildren()) do
-                                if model:FindFirstChild("EagleBossArena") then
-                                    for _, v in pairs(model.EagleBossArena:GetChildren()) do
-                                        if v.Name == "Tree" then
-                                            topos(v.CFrame * CFrame.new(0, 10, 0))
-                                            getgenv().POSITION = v.CFrame.Position
-                                        end
-                                    end
-                                end
-                            end
-                            getgenv().SpamSkill = true
-                            repeat task.wait() until not _G.Settings.Main["Auto Summon Tyrant Of The Skies"] or game.ReplicatedStorage:FindFirstChild("Tyrant of the Skies") or workspace.Enemies:FindFirstChild("Tyrant of the Skies") or not allVisible
-                            getgenv().SpamSkill = false
-                            getgenv().POSITION = nil
-                        end
-                    else
-                        topos(CFrame.new(-16220.0195, 9.1023283, 471.024963, -0.475212067, 0, -0.879871309, 0, 1, 0, 0.879871309, 0, -0.475212067))
                     end
                 end
             end
         end
-    end)
+    else
+        local haha = cc[math.random(1, 2)]
+        repeat
+            task.wait()
+            topos(haha)
+        until (plr.Character.HumanoidRootPart.Position - haha.Position).Magnitude <= 10
+    end
 end
-
+spawn(function()
+    while task.wait() do 
+        pcall(function()
+            if _G.Settings.Main["Auto Summon Tyrant Of The Skies"] then 
+                AutoTyrant()
+            end
+        end)
+    end
+end)
 if World1 then
 	tableMon = {
 		"Bandit",
