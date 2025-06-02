@@ -1,3 +1,50 @@
+function cleanLag()
+    task.spawn(function()
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v.ClassName == "Part" or v.ClassName == "SpawnLocation" or v.ClassName == "WedgePart" or v.ClassName == "Terrain" then
+                v.Material = "Plastic"
+            end
+        end
+        for _, v in pairs(game:GetDescendants()) do
+            if v:IsA("Texture") then
+                v.Texture = ""
+            elseif v:IsA("BasePart") then
+                v.Material = "Plastic"
+            end
+        end
+        for _, v in pairs(game:GetService("Players").LocalPlayer.PlayerScripts:GetDescendants()) do
+          if table.find({"RecordMode", "Fireflies", "Wind", "WindShake", "WindLines", "WaterBlur", "WaterEffect", "wave", "WaterColorCorrection", "WaterCFrame", "MirageFog", "MobileButtonTransparency", "WeatherStuff", "AnimateEntrance", "Particle", "AccessoryInvisible"}, v.Name) then
+                v:Destroy()
+            end
+        end
+        task.spawn(function()
+            local e, r, s, t, d = 0, true
+            while r do
+                s = os.clock()
+                if e > 1000 or os.clock() - s > 0.1 then r = false break end
+                for i = 1, 5 do
+                    local a = i * 2
+                end
+                e = e + 1
+                t = os.clock() - s
+                d = t > 0.05 and 0.05 or 0.01
+                task.wait(d)
+            end
+        end)
+        if game.PlaceId == 4442272183 or game.PlaceId == 2753915549 or game.PlaceId == 7449423635 then
+            pcall(function()
+                local hookfunc = hookfunction or function() end
+                hookfunc(require(game:GetService("ReplicatedStorage").Effect.Container.Death), function() end)
+                hookfunc(require(game:GetService("ReplicatedStorage").Effect.Container.Respawn), function() end)
+                hookfunc(game:GetService("Players").LocalPlayer.Kick, newcclosure(function() end))
+            end)
+        end
+        pcall(function()
+            game:GetService("RunService"):Set3dRenderingEnabled(false)
+        end)
+    end)
+end
+
 if getgenv().Load then
     return
 end
@@ -71,7 +118,6 @@ _G.Settings = {
 		["Selected Mastery Sword"] = nil,
 		["Auto Farm Sword Mastery"] = false,
 		["Auto Summon Tyrant Of The Skies"] = false,
-		["Auto Kill Tyrant Of The Skies"] = false,
 		["Selected Mob"] = nil,
 		["Auto Farm Mob"] = false,
 		["Selected Boss"] = nil,
@@ -417,63 +463,7 @@ function runSafeLoop2(f, m)
 		end
 	end)
 end;
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
-
-local function disableEffectsAndKick()
-    local hookfunc = hookfunction or function(...) end
-    local require = require or function(...) end
-
-    -- Disable death and respawn effects
-    local success1, err1 = pcall(function()
-        hookfunc(require(ReplicatedStorage.Effect.Container.Death), function() return end)
-    end)
-
-    local success2, err2 = pcall(function()
-        hookfunc(require(ReplicatedStorage.Effect.Container.Respawn), function() return end)
-    end)
-
-    -- Disable kick
-    local success3, err3 = pcall(function()
-        local localPlayer = Players.LocalPlayer
-        hookfunction(localPlayer.Kick, newcclosure(function(self, reason)
-            return
-        end))
-    end)
-
-    -- Optional: Return statuses if needed
-    return {
-        deathEffectDisabled = success1,
-        respawnEffectDisabled = success2,
-        kickHooked = success3,
-        errors = {
-            death = err1,
-            respawn = err2,
-            kick = err3
-        }
-    }
-end
--- Check if the game is one of the specified PlaceIds
-if game.PlaceId == 4442272183 or game.PlaceId == 2753915549 or game.PlaceId == 7449423635 then
-	local success, err = pcall(function()
-		disableEffectsAndKick()
-	end)
-	if not success then
-		warn("Failed to disable effects and kick: " .. tostring(err))
-	end
-end
-
-local RunService = game:GetService("RunService")
-
--- Function to toggle 3D rendering
-local function toggleRendering(enabled)
-    pcall(function()
-        RunService:Set3dRenderingEnabled(enabled)
-    end)
-end
-
--- Disable 3D rendering to reduce lag
-toggleRendering(false)
+--Thua
 function CheckQuest()
 	MyLevel = (game:GetService("Players")).LocalPlayer.Data.Level.Value;
 	if World1 then
@@ -3768,114 +3758,169 @@ spawn(function()
 		end;
 	end;
 end);
-MainTab:Toggle("Auto Summon Tyrant", _G.Settings.Main["Auto Summon Tyrant Of The Skies"], "Summon", function(value)
+MainTab:Seperator("Tyrant Of The Skies");
+MainTab:Toggle("Auto Tyrant", _G.Settings.Main["Auto Summon Tyrant Of The Skies"], "Fullly Do Tyrant Event", function(value)
 	_G.Settings.Main["Auto Summon Tyrant Of The Skies"] = value;
 	StopTween(_G.Settings.Main["Auto Summon Tyrant Of The Skies"]);
 	(getgenv()).SaveSetting();
 end);
-function AutoTyrant()
-    local plr = game.Players.LocalPlayer
-    local mobTyrant = {"Island Boy (Lv. 2475)", "Isle Champion (Lv. 2525)", "Serpent Hunter (Lv. 2550)", "Skull Slayer (Lv. 2575)"}
-    local cc = {
-        CFrame.new(-16523.1094, 55.7330475, 1097.32617, -0.995399475, 0, 0.0958118811, 0, 1, 0, -0.0958118811, 0, -0.995399475),
-        CFrame.new(-16508.6289, 55.7330589, -231.490143, 0.124618106, 0, -0.992204785, 0, 1, 0, 0.992204785, 0, 0.124618106)
-    }
+task.spawn(function()
+	while task.wait() do
+		if _G.Settings.Main["Auto Summon Tyrant Of The Skies"] then
+			pcall(function()
+				EagleEyes = {Eye1 = false, Eye2 = false, Eye3 = false, Eye4 = false}
+				for _, v in ipairs(game.Workspace.Map.TikiOutpost.IslandModel:GetChildren()) do
+					if string.match(v.Name, "^Eye%d$") and EagleEyes[v.Name] ~= nil and tonumber(v.Transparency) == 0 then
+						EagleEyes[v.Name] = true
+					end
+				end
+				if game.Workspace.Map.TikiOutpost.IslandModel:FindFirstChild("IslandChunks") and game.Workspace.Map.TikiOutpost.IslandModel.IslandChunks:FindFirstChild("E") then
+					for _, v in ipairs(game.Workspace.Map.TikiOutpost.IslandModel.IslandChunks.E:GetChildren()) do
+						if string.match(v.Name, "^Eye%d$") and EagleEyes[v.Name] ~= nil and tonumber(v.Transparency) == 0 then
+							EagleEyes[v.Name] = true
+						end
+					end
+				end
+				EyesReady = true
+				for _, found in pairs(EagleEyes) do
+					if not found then
+						EyesReady = false
+					end
+				end
 
-    if (plr.Character.HumanoidRootPart.Position - CFrame.new(-16220.0195, 9.1023283, 471.024963).Position).Magnitude < 1000 then
-        local boss = nil
-        for _, v in pairs(game.ReplicatedStorage:GetChildren()) do
-            if v:IsA("Model") and v.Name == "Tyrant of the Skies [Lv. 2600] [Raid Boss]" and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-                boss = v
-                break
-            end
-        end
-        if not boss then
-            for _, v in pairs(workspace.Enemies:GetChildren()) do
-                if v:IsA("Model") and v.Name == "Tyrant of the Skies [Lv. 2600] [Raid Boss]" and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-                    boss = v
-                    break
-                end
-            end
-        end
-        if boss and _G.Settings.Main["Auto Summon Tyrant Of The Skies"] then
-            repeat
-                task.wait()
-                sizepart(boss)
-                topos(plr.Character.HumanoidRootPart.Position, boss.HumanoidRootPart.Position, boss.HumanoidRootPart.CFrame * CFrame.new(7, -20, 0))
-                if (plr.Character.HumanoidRootPart.Position - boss.HumanoidRootPart.Position).Magnitude < 50 then
-                    DetectFastAttack()
-                end
-                EquipWeapon(_G.Settings.Main["Selected Weapon"])
-            until not boss or not boss:FindFirstChild("HumanoidRootPart") or not boss:FindFirstChild("Humanoid") or boss.Humanoid.Health <= 0 or not _G.Settings.Main["Auto Summon Tyrant Of The Skies"]
-        elseif checkgay() and _G.Settings.Main["Auto Summon Tyrant Of The Skies"] then
-            local c2 = givayong()
-            if c2 then
-                repeat
-                    task.wait()
-                    sizepart(c2)
-                    topos(plr.Character.HumanoidRootPart.Position, c2.HumanoidRootPart.Position, c2.HumanoidRootPart.CFrame * CFrame.new(7, 20, 0))
-                    getgenv().POSITION = topos.CFrame.Position
-                    if (plr.Character.HumanoidRootPart.Position - c2.HumanoidRootPart.Position).Magnitude < 50 then
-                        getgenv().SpamSkill = true
-                    end
-                until not c2 or not c2.Parent or not c2.Parent.Parent or not givayong() or not checkgay() or boss or not _G.Settings.Main["Auto Summon Tyrant Of The Skies"]
-                getgenv().SpamSkill = false
-                getgenv().POSITION = nil
-            end
-        else
-            local mob = nil
-            local dist = math.huge
-            for _, v in pairs(workspace.Enemies:GetChildren()) do
-                local name = v.Name:gsub(" %pLv. %d+%p", "")
-                if table.find(mobTyrant, v.Name) or table.find(mobTyrant, name) and v:IsA("Model") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 and v:FindFirstChild("HumanoidRootPart") then
-                    local magnitude = (v.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                    if magnitude < dist then
-                        dist = magnitude
-                        mob = v
-                    end
-                end
-            end
-            if mob and _G.Settings.Main["Auto Summon Tyrant Of The Skies"] then
-                repeat
-                    task.wait()
-                    sizepart(mob)
-                    topos(plr.Character.HumanoidRootPart.Position, mob.HumanoidRootPart.Position, mob.HumanoidRootPart.CFrame * CFrame.new(7, 20, 0))
-                    if (plr.Character.HumanoidRootPart.Position - mob.HumanoidRootPart.Position).Magnitude < 50 then
-                        DetectFastAttack()
-                    end
-                    EquipWeapon(_G.Settings.Main["Selected Weapon"])
-                    task.spawn(function() BringMob(mob) end)
-                until not mob or not mob:FindFirstChild("HumanoidRootPart") or not mob:FindFirstChild("Humanoid") or mob.Humanoid.Health <= 0 or checkgay() or not _G.Settings.Main["Auto Summon Tyrant Of The Skies"]
-            else
-                local spawn = workspace.Enemies:FindFirstChild("Spawn")
-                if spawn and _G.Settings.Main["Auto Summon Tyrant Of The Skies"] then
-                    plr.Character.HumanoidRootPart.CFrame = spawn.CFrame
-                else
-                    for _, v in pairs(workspace.Enemies:GetChildren()) do
-                        if v:IsA("Model") and table.find(mobTyrant, v.Name) then
-                            plr.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
-                            break
-                        end
-                    end
-                end
-            end
-        end
-    else
-        local haha = cc[math.random(1, 2)]
-        repeat
-            task.wait()
-            topos(haha)
-        until (plr.Character.HumanoidRootPart.Position - haha.Position).Magnitude <= 10
-    end
-end
-spawn(function()
-    while task.wait() do 
-        pcall(function()
-            if _G.Settings.Main["Auto Summon Tyrant Of The Skies"] then 
-                AutoTyrant()
-            end
-        end)
-    end
+				if game.Workspace:FindFirstChild("Enemies") then
+					Tyrant = game.Workspace.Enemies:FindFirstChild("Tyrant of the Skies")
+					if Tyrant then
+						repeat task.wait()
+							EquipWeapon(_G.Settings.Main["Selected Weapon"])
+							topos(Tyrant.HumanoidRootPart.CFrame * Pos)
+							Attack()
+							AutoHaki()
+							Tyrant.Humanoid.JumpPower = 0
+							Tyrant.Humanoid.WalkSpeed = 0
+						until not Tyrant.Parent or not game.Workspace.Enemies:FindFirstChild("Tyrant of the Skies") or not _G.Settings.Main["Auto Summon Tyrant Of The Skies"]
+					elseif not EyesReady then
+						MobFound = false
+						for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
+							if table.find({"Serpent Hunter", "Skull Slayer", "Isle Champion", "Sun-kissed Warrior"}, v.Name) and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+								MobFound = true
+								repeat task.wait()
+									BringMob = true
+									EquipWeapon(_G.Settings.Main["Selected Weapon"])
+									topos(v.HumanoidRootPart.CFrame * Pos)
+									_G.Setting.Settings["Bring Mob"] = true
+									AutoHaki()
+									v.Humanoid.JumpPower = 0
+									v.Humanoid.WalkSpeed = 0
+									FarmPos = v.HumanoidRootPart.CFrame
+									MonFarm = v.Name
+								until not v.Parent or v.Humanoid.Health <= 0 or EyesReady or not _G.Settings.Main["Auto Summon Tyrant Of The Skies"]
+							end
+						end
+						if not MobFound then
+							topos(CFrame.new(-16654.3671875, 416.16455078125, 1363.68359375))
+						end
+					else
+						repeat task.wait()
+							if game.Workspace.Map.TikiOutpost.IslandModel and game.Workspace.Map.TikiOutpost.IslandModel:FindFirstChild("IslandChunks") and game.Workspace.Map.TikiOutpost.IslandModel.IslandChunks:FindFirstChild("D") then
+								if game.Workspace.Map.TikiOutpost.IslandModel.IslandChunks.D:FindFirstChild("EagleBossArena") then
+									for _, v in pairs(game.Workspace.Map.TikiOutpost.IslandModel.IslandChunks.D.EagleBossArena:GetChildren()) do
+										if v.Name == "Tree" then
+											treePos = v.WorldPivot.Position
+											if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - treePos).Magnitude <= 1 then
+												useAllSkill()
+											else
+												topos(CFrame.new(treePos))
+											end
+										end
+									end
+								end
+							end
+						until game.Workspace.Enemies:FindFirstChild("Tyrant of the Skies") or not _G.Settings.Main["Auto Summon Tyrant Of The Skies"]
+					end
+				end
+			end)
+		end
+	end
+end)
+task.spawn(function()
+	while task.wait() do
+		if _G.Settings.Main["Auto Summon Tyrant Of The Skies"] then
+			pcall(function()
+				EagleEyes = {Eye1 = false, Eye2 = false, Eye3 = false, Eye4 = false}
+				for _, v in ipairs(game.Workspace.Map.TikiOutpost.IslandModel:GetChildren()) do
+					if string.match(v.Name, "^Eye%d$") and EagleEyes[v.Name] ~= nil and tonumber(v.Transparency) == 0 then
+						EagleEyes[v.Name] = true
+					end
+				end
+				if game.Workspace.Map.TikiOutpost.IslandModel:FindFirstChild("IslandChunks") and game.Workspace.Map.TikiOutpost.IslandModel.IslandChunks:FindFirstChild("E") then
+					for _, v in ipairs(game.Workspace.Map.TikiOutpost.IslandModel.IslandChunks.E:GetChildren()) do
+						if string.match(v.Name, "^Eye%d$") and EagleEyes[v.Name] ~= nil and tonumber(v.Transparency) == 0 then
+							EagleEyes[v.Name] = true
+						end
+					end
+				end
+				EyesReady = true
+				for _, found in pairs(EagleEyes) do
+					if not found then
+						EyesReady = false
+					end
+				end
+
+				if game.Workspace:FindFirstChild("Enemies") then
+					Tyrant = game.Workspace.Enemies:FindFirstChild("Tyrant of the Skies")
+					if Tyrant then
+						repeat task.wait()
+							EquipWeapon(_G.Settings.Main["Selected Weapon"])
+							topos(Tyrant.HumanoidRootPart.CFrame * Pos)
+							Attack()
+							AutoHaki()
+							Tyrant.Humanoid.JumpPower = 0
+							Tyrant.Humanoid.WalkSpeed = 0
+						until not Tyrant.Parent or not game.Workspace.Enemies:FindFirstChild("Tyrant of the Skies") or not _G.Settings.Main["Auto Summon Tyrant Of The Skies"]
+					elseif not EyesReady then
+						MobFound = false
+						for _, v in pairs(game.Workspace.Enemies:GetChildren()) do
+							if table.find({"Serpent Hunter", "Skull Slayer", "Isle Champion", "Sun-kissed Warrior"}, v.Name) and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
+								MobFound = true
+								repeat task.wait()
+									BringMob = true
+									EquipWeapon(_G.Settings.Main["Selected Weapon"])
+									topos(v.HumanoidRootPart.CFrame * Pos)
+									Attack()
+									AutoHaki()
+									v.Humanoid.JumpPower = 0
+									v.Humanoid.WalkSpeed = 0
+									FarmPos = v.HumanoidRootPart.CFrame
+									MonFarm = v.Name
+								until not v.Parent or v.Humanoid.Health <= 0 or EyesReady or not _G.Settings.Main["Auto Summon Tyrant Of The Skies"]
+							end
+						end
+						if not MobFound then
+							topos(CFrame.new(-16654.3671875, 416.16455078125, 1363.68359375))
+						end
+					else
+						repeat task.wait()
+							if game.Workspace.Map.TikiOutpost.IslandModel and game.Workspace.Map.TikiOutpost.IslandModel:FindFirstChild("IslandChunks") and game.Workspace.Map.TikiOutpost.IslandModel.IslandChunks:FindFirstChild("D") then
+								if game.Workspace.Map.TikiOutpost.IslandModel.IslandChunks.D:FindFirstChild("EagleBossArena") then
+									for _, v in pairs(game.Workspace.Map.TikiOutpost.IslandModel.IslandChunks.D.EagleBossArena:GetChildren()) do
+										if v.Name == "Tree" then
+											treePos = v.WorldPivot.Position
+											if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - treePos).Magnitude <= 1 then
+												useAllSkill()
+											else
+												topos(CFrame.new(treePos))
+											end
+										end
+									end
+								end
+							end
+						until game.Workspace.Enemies:FindFirstChild("Tyrant of the Skies") or not _G.Settings.Main["Auto Summon Tyrant Of The Skies"]
+					end
+				end
+			end)
+		end
+	end
 end)
 if World1 then
 	tableMon = {
@@ -5737,6 +5782,7 @@ end)
 			end);
 		end;
 	end);
+
 	local BribeStatus = SeaStackTab:Label("Leviathan Status");
 	SeaStackTab:Button("Bribe Leviathan ( Buy Info Leviathan )", function()
 		local Status = (game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("InfoLeviathan", "2");
@@ -10086,6 +10132,15 @@ spawn(function()
         end
     end)
 end)
+
+spawn(function()
+   while true do
+       game.Players.LocalPlayer.MaximumSimulationRadius = math.pow(math.huge,math.huge)*math.huge
+       game.Players.LocalPlayer.SimulationRadius = math.pow(math.huge,math.huge)*math.huge
+       game:GetService("RunService").Stepped:wait()
+   end
+end)
+
 StatsTab:Seperator("Stats");
 local Pointstat = StatsTab:Label("Stat Points");
 spawn(function()
@@ -12647,12 +12702,7 @@ function CheckStun(ToolTip, Character, Humanoid)
         return false
     end
     return true
-end
-
-local Settings = {
-	["AutoAttack"] = true,
-	["AutoShoot"] = true
-}
+end	
 
 FastAttack = (function()
     local FastAttack = {
@@ -13256,133 +13306,254 @@ function Funcs:Attack()
     Register_Hit:FireServer(unpack(args))
 end
 --- 1 tap 1 sut ---
-local FastAttack = {
-	Distance = 50,
-	attackMobs = true,
-	attackPlayers = true,
-	Debounce = 0,
-	ComboDebounce = 0,
-	ShootDebounce = 0,
-	M1Combo = 0,
-	Overheat = {
-		Dragonstorm = {
-			MaxOverheat = 3,
-			Cooldown = 0,
-			TotalOverheat = 0,
-			Distance = 350,
-			Shooting = false
-		}
-	},
-	ShootsPerTarget = {
-		["Dual Flintlock"] = 2
-	},
-	SpecialShoots = {
-		["Skull Guitar"] = "TAP",
-		["Bazooka"] = "Position",
-		["Cannon"] = "Position",
-		["Dragonstorm"] = "Overheat"
-	},
-	HitboxLimbs = {"RightLowerArm","RightUpperArm","LeftLowerArm","LeftUpperArm","RightHand","LeftHand"},
-	ShootsFunctions = {
-		["Skull Guitar"] = function(self, Equipped, Position)
-			Equipped.RemoteEvent:FireServer("TAP", Position)
-		end
-	}
+local Config = {
+    AttackDistance = 65,
+    AttackMobs = true,
+    AttackPlayers = true,
+    AttackCooldown = 0.2,
+    ComboResetTime = 0.3,
+    MaxCombo = 4,
+    HitboxLimbs = {"RightLowerArm", "RightUpperArm", "LeftLowerArm", "LeftUpperArm", "RightHand", "LeftHand"},
+    AutoClickEnabled = true
 }
 
-local Characters = game:GetService("Workspace").Characters
-local Enemies = game:GetService("Workspace").Enemies
-local Players = game:GetService("Players")
-local Player = Players.LocalPlayer
-local Character = Player.Character
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Player = game:GetService("Players").LocalPlayer
 local RunService = game:GetService("RunService")
-local Net = ReplicatedStorage:WaitForChild("Net")
-local RE_ShootGunEvent = Net:WaitForChild("RE/ShootGunEvent")
-local GunValidator = Net:WaitForChild("GunValidator")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
 local VirtualInputManager = game:GetService("VirtualInputManager")
-local Stepped = RunService.Stepped
-local Connections = {}
-function FastAttack:GetClosestEnemy(Character, Range)
-	local Hits = {}
-	local Pos = Character:GetPivot().Position
-	for _, Mob in ipairs(Enemies:GetChildren()) do
-		local Part = Mob.PrimaryPart
-		if Part and (Part.Position - Pos).Magnitude <= (Range or self.Distance) then
-			table.insert(Hits, Part)
-		end
-	end
-	for _, Ply in ipairs(Characters:GetChildren()) do
-		local Part = Ply.PrimaryPart
-		if Part and (Part.Position - Pos).Magnitude <= (Range or self.Distance) then
-			table.insert(Hits, Part)
-		end
-	end
-	local Closest, Dist = nil, math.huge
-	for _, Part in ipairs(Hits) do
-		local Mag = (Pos - Part.Position).Magnitude
-		if Mag < Dist then
-			Dist = Mag
-			Closest = Part
-		end
-	end
-	return Closest
+
+local AttackInstance = {
+    Debounce = 0,
+    ComboDebounce = 0,
+    ShootDebounce = 0,
+    M1Combo = 0,
+    EnemyRootPart = nil,
+    Overheat = {Dragonstorm = {MaxOverheat = 3, Cooldown = 0, TotalOverheat = 0, Distance = 350, Shooting = false}},
+    ShootsPerTarget = {["Dual Flintlock"] = 2},
+    SpecialShoots = {["Skull Guitar"] = "TAP", ["Bazooka"] = "Position", ["Cannon"] = "Position", ["Dragonstorm"] = "Overheat"},
+    Connections = {}
+}
+
+AttackInstance.Attack = function()
+    if tick() - AttackInstance.Debounce < Config.AttackCooldown or not Config.AutoClickEnabled then return end
+    local Character = Player.Character
+    if not Character or not Character:FindFirstChild("Humanoid") or Character.Humanoid.Health <= 0 then return end
+    local Equipped = Character:FindFirstChildOfClass("Tool")
+    if not Equipped then return end
+    local ToolTip = Equipped:FindFirstChild("ToolTip") and Equipped.ToolTip or nil
+    if not ToolTip or not (ToolTip == "Melee" or ToolTip == "Blox Fruit" or ToolTip == "Sword" or ToolTip == "Gun") then return end
+
+    local Humanoid = Character.Humanoid
+    local Stun = Character:FindFirstChild("Stun")
+    local Busy = Character:FindFirstChild("Busy")
+    if Humanoid.Sit and (ToolTip == "Sword" or ToolTip == "Melee" or ToolTip == "Blox Fruit") then return end
+    if Stun and Stun.Value > 0 or Busy and Busy.Value then return end
+
+    local Combo = (tick() - AttackInstance.ComboDebounce <= Config.ComboResetTime and AttackInstance.M1Combo or 0)
+    Combo = Combo >= Config.MaxCombo and 1 or Combo + 1
+    AttackInstance.ComboDebounce = tick()
+    AttackInstance.M1Combo = Combo
+
+    local Cooldown = Equipped:FindFirstChild("Cooldown") and Equipped.Cooldown.Value or Config.AttackCooldown
+    if Combo >= Config.MaxCombo then
+        Cooldown = Cooldown + 0.05
+        if ToolTip ~= "Gun" then AttackInstance.Debounce = tick() + 0.05 end
+    else
+        AttackInstance.Debounce = tick()
+    end
+
+    if ToolTip == "Blox Fruit" and Equipped:FindFirstChild("LeftClickRemote") then
+        local Hits = {}
+        local Pos = Character:GetPivot().Position
+        local Folders = {}
+        if Config.AttackMobs then table.insert(Folders, Workspace.Enemies) end
+        if Config.AttackPlayers then table.insert(Folders, Workspace.Characters) end
+        for _, Folder in ipairs(Folders) do
+            for _, Enemy in ipairs(Folder:GetChildren()) do
+                if Enemy ~= Character and Enemy:FindFirstChild("Humanoid") and Enemy.Humanoid.Health > 0 then
+                    local Limb = Enemy:FindFirstChild(Config.HitboxLimbs[math.random(#Config.HitboxLimbs)]) or Enemy:FindFirstChild("HumanoidRootPart")
+                    if Limb and (Pos - Limb.Position).Magnitude <= Config.AttackDistance then
+                        table.insert(Hits, {Enemy, Limb})
+                    end
+                end
+            end
+        end
+        if Hits[1] then
+            local Direction = (Hits[1][2].Position - Pos).Unit
+            Equipped.LeftClickRemote:FireServer(Direction, Combo)
+        end
+
+        local EE = Player.Backpack:FindFirstChild("Eagle-Eagle")
+        local GG = Player.Backpack:FindFirstChild("Gravity-Gravity")
+        if EE and EE:FindFirstChild("LeftClickRemote") then EE.LeftClickRemote:FireServer(Vector3.new(1, 0, 0)) end
+        if GG and GG:FindFirstChild("LeftClickRemote") then GG.LeftClickRemote:FireServer(Vector3.new(1, 0, 0)) end
+    elseif ToolTip == "Gun" then
+        local Closest, Dist = nil, math.huge
+        local Pos = Character:GetPivot().Position
+        local Folders = {}
+        if Config.AttackMobs then table.insert(Folders, Workspace.Enemies) end
+        if Config.AttackPlayers then table.insert(Folders, Workspace.Characters) end
+        for _, Folder in ipairs(Folders) do
+            for _, Enemy in ipairs(Folder:GetChildren()) do
+                if Enemy ~= Character and Enemy:FindFirstChild("Humanoid") and Enemy.Humanoid.Health > 0 then
+                    local Limb = Enemy:FindFirstChild(Config.HitboxLimbs[math.random(#Config.HitboxLimbs)]) or Enemy:FindFirstChild("HumanoidRootPart")
+                    if Limb then
+                        local Mag = (Pos - Limb.Position).Magnitude
+                        if Mag < Dist and Mag <= 120 then
+                            Dist = Mag
+                            Closest = Limb
+                        end
+                    end
+                end
+            end
+        end
+        if Equipped:FindFirstChild("Cooldown") and tick() - AttackInstance.ShootDebounce < Equipped.Cooldown.Value then return end
+        if Closest then
+            local ShootType = AttackInstance.SpecialShoots[Equipped.Name] or "Normal"
+            if ShootType == "Position" then
+                ShootGunEvent:FireServer(Closest.Position)
+            elseif ShootType == "TAP" and Equipped:FindFirstChild("RemoteEvent") then
+                Equipped.RemoteEvent:FireServer("TAP", Closest.Position)
+            else
+                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1)
+                task.wait(0.05)
+                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
+            end
+            AttackInstance.ShootDebounce = tick()
+        end
+    else
+        AttackInstance.EnemyRootPart = nil
+        local Hits = {}
+        local Pos = Character:GetPivot().Position
+        local Folders = {}
+        if Config.AttackMobs then table.insert(Folders, Workspace.Enemies) end
+        if Config.AttackPlayers then table.insert(Folders, Workspace.Characters) end
+        for _, Folder in ipairs(Folders) do
+            for _, Enemy in ipairs(Folder:GetChildren()) do
+                if Enemy ~= Character and Enemy:FindFirstChild("Humanoid") and Enemy.Humanoid.Health > 0 then
+                    local Limb = Enemy:FindFirstChild(Config.HitboxLimbs[math.random(#Config.HitboxLimbs)]) or Enemy:FindFirstChild("HumanoidRootPart")
+                    if Limb and (Pos - Limb.Position).Magnitude <= Config.AttackDistance then
+                        if not AttackInstance.EnemyRootPart then
+                            AttackInstance.EnemyRootPart = Limb
+                        else
+                            table.insert(Hits, {Enemy, Limb})
+                        end
+                    end
+                end
+            end
+        end
+        if AttackInstance.EnemyRootPart then
+            RegisterAttack:FireServer(Cooldown)
+            if AttackInstance.HitFunction then
+                AttackInstance.HitFunction(AttackInstance.EnemyRootPart, Hits)
+            else
+                RegisterHit:FireServer(AttackInstance.EnemyRootPart, Hits)
+            end
+        end
+    end
 end
 
-function FastAttack:GetCombo()
-	local t = tick()
-	self.M1Combo = (t - self.ComboDebounce <= 0.4 and self.M1Combo or 0) + 1
-	self.M1Combo = self.M1Combo > 4 and 1 or self.M1Combo
-	self.ComboDebounce = t
-	return self.M1Combo
+AttackInstance.Connections[#AttackInstance.Connections + 1] = RunService.Stepped:Connect(function()
+    AttackInstance.Attack()
+end)
+
+for _, v in pairs(getgc(true)) do
+    if typeof(v) == "function" and iscclosure(v) then
+        local name = debug.getinfo(v).name
+        if name == "Attack" or name == "attack" or name == "RegisterHit" then
+            hookfunction(v, function(...)
+                AttackInstance.Attack()
+                return v(...)
+            end)
+        end
+    end
 end
 
-function FastAttack:TapFruit()
-	local Character = Player.Character
-	local Equipped = Character and Character:FindFirstChildOfClass("Tool")
-	if Equipped and Equipped.ToolTip == "Blox Fruit" and Equipped:FindFirstChild("LeftClickRemote") then
-		Equipped.LeftClickRemote:FireServer("TAP", 1, true)
-		if Equipped.Name == "Gravity-Gravity" or Equipped.Name == "Eagle-Eagle" then
-			local M1 = Equipped:FindFirstChild("M1Active")
-			local Mode = M1 and M1.Value and "M1" or "M2"
-			Equipped.LeftClickRemote:FireServer(Mode, self:GetCombo(), true)
-		end
-	end
+local Players = game:GetService("Players")
+local WS = game:GetService("Workspace")
+
+local LP = Players.LocalPlayer
+
+local function alive(m)
+    local h = m:FindFirstChild("Humanoid")
+    return h and h.Health > 0
 end
 
-function FastAttack:attack()
-	if not Settings.AutoClick then return end
-	local Character = Player.Character
-	local Humanoid = Character and Character:FindFirstChild("Humanoid")
-	local Equipped = Character and Character:FindFirstChildOfClass("Tool")
-	if not Equipped then return end
-	local Tip = Equipped.ToolTip
-	if Tip ~= "Gun" and Tip ~= "Melee" and Tip ~= "Blox Fruit" and Tip ~= "Sword" then return end
-	local Cool = Equipped:FindFirstChild("Cooldown") and Equipped.Cooldown.Value or 0.3
-	if tick() - self.Debounce < Cool then return end
-	self.Debounce = tick()
-	if Tip == "Blox Fruit" then
-		if Equipped.Name == "Ice-Ice" or Equipped.Name == "Light-Light" then
-			VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1)
-			task.wait(0.05)
-			VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
-		elseif Equipped:FindFirstChild("LeftClickRemote") then
-			self:TapFruit()
-		end
-	elseif Tip == "Gun" then
-		local Target = self:GetClosestEnemy(Character, 200)
-		if Target then
-			GunValidator:FireServer(self:GetValidator2())
-			RE_ShootGunEvent:FireServer(Target.Position, { Target })
-		end
-	else
-		VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 1)
-		task.wait(0.05)
-		VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 1)
-	end
+local function isFruit(t)
+    return t and t.ToolTip == "Blox Fruit"
 end
 
-table.insert(Connections, Stepped:Connect(function() FastAttack:attack() end))
+local function getEquippedTool()
+    local c = LP.Character or LP.CharacterAdded:Wait()
+    for _, v in ipairs(c:GetChildren()) do
+        if v:IsA("Tool") then return v end
+    end
+end
+
+local limbs = {"RightLowerArm", "RightUpperArm", "LeftLowerArm", "LeftUpperArm", "RightHand", "LeftHand"}
+
+local function getTargets(radius)
+    local c = LP.Character
+    if not c then return {} end
+    local pos = c:GetPivot().Position
+    local list = {}
+
+    if WS:FindFirstChild("Enemies") then
+        for _, e in ipairs(WS.Enemies:GetChildren()) do
+            if alive(e) and not e:GetAttribute("IsBoat") then
+                local root = e:FindFirstChild("HumanoidRootPart")
+                if root and (pos - root.Position).Magnitude <= radius then
+                    for _, limb in ipairs(limbs) do
+                        local part = e:FindFirstChild(limb)
+                        if part then
+                            table.insert(list, {e, part, (pos - part.Position).Magnitude})
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LP and p.Character and alive(p.Character) then
+            local root = p.Character:FindFirstChild("HumanoidRootPart")
+            if root and (pos - root.Position).Magnitude <= radius then
+                for _, limb in ipairs(limbs) do
+                    local part = p.Character:FindFirstChild(limb)
+                    if part then
+                        table.insert(list, {p.Character, part, (pos - part.Position).Magnitude})
+                    end
+                end
+            end
+        end
+    end
+
+    table.sort(list, function(a, b) return a[3] < b[3] end)
+    return list
+end
+
+local function Attack()
+    local c = LP.Character
+    if not c or not alive(c) then return end
+
+    local tool = getEquippedTool()
+    if not tool or not isFruit(tool) then return end
+
+    local pos = c:GetPivot().Position
+    local targetsList = getTargets(50)
+    if #targetsList == 0 then return end
+
+    for _, v in ipairs(targetsList) do
+        pcall(function()
+            local rf = c:FindFirstChild("Humanoid"):FindFirstChildOfClass("RemoteFunction")
+            if rf then
+                rf:InvokeServer("TAP", v[2].Position, pos)
+            end
+        end)
+    end
+end
 
 LoadedUiHub = true
+cleanLag()
 print("Loaded Successfully")
